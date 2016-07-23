@@ -1,5 +1,5 @@
 shinyUI(fluidPage(
-  titlePanel('Downloading Data'),
+  titlePanel('Download Data'),
   sidebarLayout(
     sidebarPanel(
       selectInput("dataset", "Choose a dataset:", 
