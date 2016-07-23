@@ -6,9 +6,11 @@ shinyServer(function(input, output) {
            "cars" = cars)
   })
 
-  output$table <- renderTable({
-    datasetInput()
-  })
+  options(DT.options = list(pageLength = 5))
+  output$table = DT::renderDataTable(datasetInput())
+  # output$table <- renderTable({
+  #   datasetInput()
+  # })
 
   output$downloadData <- downloadHandler(
     filename = function() {
@@ -19,3 +21,4 @@ shinyServer(function(input, output) {
     }
   )
 })
+

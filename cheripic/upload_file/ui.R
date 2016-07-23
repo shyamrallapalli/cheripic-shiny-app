@@ -22,7 +22,8 @@ shinyUI(fluidPage(
                    '"')
     ),
     mainPanel(
-      tableOutput('contents')
+      # tableOutput('contents')
+      DT::dataTableOutput('contents')
     )
   )
 ))

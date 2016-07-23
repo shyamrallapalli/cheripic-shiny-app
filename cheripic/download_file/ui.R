@@ -2,12 +2,13 @@ shinyUI(fluidPage(
   titlePanel('Download Data'),
   sidebarLayout(
     sidebarPanel(
-      selectInput("dataset", "Choose a dataset:", 
+      selectInput("dataset", "Choose a dataset:",
                   choices = c("rock", "pressure", "cars")),
       downloadButton('downloadData', 'Download')
     ),
     mainPanel(
-      tableOutput('table')
+      # tableOutput('table')
+      DT::dataTableOutput('table')
     )
   )
 ))
