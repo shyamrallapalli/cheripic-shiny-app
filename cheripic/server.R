@@ -1,6 +1,8 @@
 library(shiny)
+library(ggplot2)
 
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
+
   options(DT.options = list(pageLength = 5))
   output$contents = DT::renderDataTable({
   # output$contents <- renderTable({
@@ -17,6 +19,25 @@ shinyServer(function(input, output) {
       return(NULL)
 
     read.csv(inFile$datapath, header=input$header, sep=input$sep,
-				 quote=input$quote)
+         quote=input$quote)
   })
+
+  dataset <- reactive({
+    inFile <- input$infile
+    if (is.null(inFile))
+      return(NULL)
+    read.csv(inFile$datapath, header=input$header, sep=input$sep,
+         quote=input$quote)
+    # output$contents
+  })
+
+#  dataset <- output$contents
+  output$plot <- renderPlot({
+    ggplot(dataset(), aes(seq_id)) + geom_bar()
+  })
+
+  # output$summary <- renderPrint({
+  #   summary(cars)
+  # })
+
 })
