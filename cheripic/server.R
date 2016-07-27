@@ -4,16 +4,12 @@ library(hash)
 
 shinyServer(function(input, output, session) {
 
-  options(DT.options = list(pageLength = 5))
-  output$contents = DT::renderDataTable({
-  # output$contents <- renderTable({
-
-    # input$file1 will be NULL initially. After the user selects
-    # and uploads a file, it will be a data frame with 'name',
-    # 'size', 'type', and 'datapath' columns. The 'datapath'
-    # column will contain the local filenames where the data can
-    # be found.
-
+  # input$file1 will be NULL initially. After the user selects
+  # and uploads a file, it will be a data frame with 'name',
+  # 'size', 'type', and 'datapath' columns. The 'datapath'
+  # column will contain the local filenames where the data can
+  # be found.
+  scaninput <- reactive({
     inFile <- input$infile
 
     if (is.null(inFile))
@@ -21,22 +17,25 @@ shinyServer(function(input, output, session) {
 
     read.csv(inFile$datapath, header=input$header, sep=input$sep,
          quote=input$quote)
+    })
+
+  options(DT.options = list(pageLength = 5))
+  output$contents = DT::renderDataTable({
+  # output$contents <- renderTable({
+    scaninput()
   })
+
 
   dataset <- reactive({
     # output$contents
-    inFile <- input$infile
-    if (is.null(inFile))
-      return(NULL)
-    input = read.csv(inFile$datapath, header=input$header, sep=input$sep,
-         quote=input$quote)
-    scores = sort(unique(input$HMEscore), decreasing = TRUE)
-    newdf <- data.frame(matrix(ncol=ncol(input), nrow=0))
-    colnames(newdf) = colnames(input)
+    df = scaninput()
+    scores = sort(unique(df$HMEscore), decreasing = TRUE)
+    newdf <- data.frame(matrix(ncol=ncol(df), nrow=0))
+    colnames(newdf) = colnames(df)
     int = 0
 
     for (score in scores) {
-      selection = subset(input, input$HMEscore == score)
+      selection = subset(df, df$HMEscore == score)
       elements = as.vector(unique(selection$seq_id))
       one_item = ''
       len = length(elements)
