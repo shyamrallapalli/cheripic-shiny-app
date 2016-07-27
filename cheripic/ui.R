@@ -2,8 +2,10 @@ library(shiny)
 library(ggplot2)
 
 shinyUI(navbarPage(
-  "CHERPIC Variants",
-  tabPanel("Input",
+  "CHERPIC Variants", id = "navbar",
+  tabPanel(
+    title = "Input",
+    value = "Input",
     fluidPage(
       #titlePanel("Upload File"),
       sidebarLayout(
@@ -14,16 +16,16 @@ shinyUI(navbarPage(
                      '.csv')),
           tags$hr(),
           checkboxInput('header', 'Header', TRUE),
+          # tab delimited is default
           radioButtons('sep', 'Separator',
-                       c(Comma=',',
-                         Semicolon=';',
-                         Tab='\t'),
-                       ','),
+                       c(Tab='\t', Comma=','),
+                       '\t'),
+          # double quotes is default
           radioButtons('quote', 'Quote',
-                       c(None='',
-                         'Double Quote'='"',
-                         'Single Quote'="'"),
-                       '"')
+                       c('Double Quote'='"', 'Single Quote'="'", None=''),
+                       '"'),
+          actionButton("plotButton", "Plot Density"),
+          p("Click the button to plot the density.")
         ),
         mainPanel(
           # tableOutput('contents')
@@ -32,12 +34,16 @@ shinyUI(navbarPage(
       )
     )
   ),
-  tabPanel("Plot",
+  tabPanel(
+    title = "Plot",
+    value = "Plot",
     fluidPage(
-      title = "Contig bar chart",
+      title = "Variant position density chart",
       plotOutput('plot')
     )
   ),
-  tabPanel("Selected Variants")
+  tabPanel(
+    title = "Selected Variants",
+    value = "Vars")
 ))
 
