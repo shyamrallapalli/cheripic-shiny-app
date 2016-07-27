@@ -2,9 +2,10 @@ library(shiny)
 library(ggplot2)
 library(hash)
 
+options(shiny.trace = TRUE)
 shinyServer(function(input, output, session) {
 
-  # input$file1 will be NULL initially. After the user selects
+  # input$infile will be NULL initially. After the user selects
   # and uploads a file, it will be a data frame with 'name',
   # 'size', 'type', and 'datapath' columns. The 'datapath'
   # column will contain the local filenames where the data can
@@ -25,6 +26,19 @@ shinyServer(function(input, output, session) {
     scaninput()
   })
 
+
+
+  observe({
+    x_select <- eventReactive(input$plotButton, {
+      TRUE
+    })
+
+    # Change the selected tab.
+    # Note that the tabset container must have been created with an 'id' argument
+    if (isTRUE(x_select())) {
+      updateNavbarPage(session, "navbar", selected = "Plot")
+    }
+  })
 
   dataset <- reactive({
     # output$contents
