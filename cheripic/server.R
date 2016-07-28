@@ -13,8 +13,9 @@ shinyServer(function(input, output, session) {
   scaninput <- reactive({
     inFile <- input$infile
 
-    if (is.null(inFile))
+    if (is.null(inFile)){
       return(NULL)
+    }
 
     read.csv(inFile$datapath, header=input$header, sep=input$sep,
          quote=input$quote)
@@ -22,7 +23,6 @@ shinyServer(function(input, output, session) {
 
   options(DT.options = list(pageLength = 5))
   output$contents = DT::renderDataTable({
-  # output$contents <- renderTable({
     scaninput()
   })
 
@@ -41,8 +41,11 @@ shinyServer(function(input, output, session) {
   })
 
   dataset <- reactive({
-    # output$contents
     df = scaninput()
+    if (is.null(df)){
+      return(NULL)
+    }
+
     scores = sort(unique(df$HMEscore), decreasing = TRUE)
     newdf <- data.frame(matrix(ncol=ncol(df), nrow=0))
     colnames(newdf) = colnames(df)
@@ -76,19 +79,35 @@ shinyServer(function(input, output, session) {
       }
 
     }
+    newdf
+  })
 
-
-    seq_lens = unique(newdf[, c("seq_id", "length")])
+  adjdataset <- reactive({
+    df = dataset()
+    if (is.null(df)){
+      return(NULL)
+    }
+    limits = input$range
+    cat(paste("limits: ", limits))
+    nums = nrow(df)
+    if(limits[1] == 0){
+      minrow = 1
+    } else {
+      minrow = round(nums * limits[1] / 100)
+    }
+    maxrow = round(nums * limits[2] / 100)
+    cat(paste("items: ", minrow, maxrow))
+    df = df[minrow:maxrow,]
+    seq_lens = unique(df[, c("seq_id", "length")])
     seq_lens$cumlen = cumsum(seq_lens$length)
     seq_lens$cumlen = c(0, seq_lens$cumlen[-nrow(seq_lens)])
     len_hash = hash(seq_lens$seq_id, seq_lens$cumlen)
-    newdf$adj_pos = newdf$length
-    seqids = as.vector(newdf$seq_id)
-    for(i in 1:nrow(newdf)){
-      newdf$adj_pos[i] = newdf$position[i] + len_hash[[seqids[i]]]
+    df$adj_pos = df$length
+    seqids = as.vector(df$seq_id)
+    for(i in 1:nrow(df)){
+      df$adj_pos[i] = df$position[i] + len_hash[[seqids[i]]]
     }
-
-    newdf
+    df
   })
 
   output$text <- renderUI({
@@ -100,9 +119,8 @@ shinyServer(function(input, output, session) {
   })
 
   output$plot <- renderPlot({
-    # ggplot(dataset(), aes(seq_id)) + geom_bar()
-    if(is.data.frame(dataset())) {
-      ggplot(dataset(), aes(adj_pos)) + geom_density(adjust = 1/5)
+    if(is.data.frame(adjdataset())) {
+      ggplot(adjdataset(), aes(adj_pos)) + geom_density(adjust = 1/3)
     }
   })
 
