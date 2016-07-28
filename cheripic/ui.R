@@ -1,13 +1,14 @@
 library(shiny)
 library(ggplot2)
+library(markdown)
 
 shinyUI(navbarPage(
   "CHERPIC Variants", id = "navbar",
+
   tabPanel(
     title = "Input",
     value = "Input",
     fluidPage(
-      #titlePanel("Upload File"),
       sidebarLayout(
         sidebarPanel(
           fileInput('infile', 'Choose Input Text/CSV File',
@@ -28,12 +29,12 @@ shinyUI(navbarPage(
           p("Click the button to plot the density.")
         ),
         mainPanel(
-          # tableOutput('contents')
           DT::dataTableOutput('contents')
         )
       )
     )
   ),
+
   tabPanel(
     title = "Plot",
     value = "Plot",
@@ -42,8 +43,27 @@ shinyUI(navbarPage(
       plotOutput('plot')
     )
   ),
+
   tabPanel(
     title = "Selected Variants",
-    value = "Vars")
+    value = "Vars"),
+
+  navbarMenu("More",
+    tabPanel("About",
+      fluidRow(
+        column(width = 8,
+          includeMarkdown("about.md")
+        ),
+        column(width = 3,
+          tags$img(src="https://upload.wikimedia.org/wikipedia/commons/3/34/Cherry_picking_%287848350200%29.jpg",
+          width = "256px", height = "171px"),
+          tags$small("Cherry picking By Charles Nadeau from San Mateo, CA, CC BY 2.0",
+            a(href="https://commons.wikimedia.org/w/index.php?curid=38449766", "Source")
+          )
+        )
+      )
+    )
+  )
+
 ))
 
