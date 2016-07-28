@@ -39,8 +39,23 @@ shinyUI(navbarPage(
     title = "Plot",
     value = "Plot",
     fluidPage(
-      title = "Variant position density chart",
-      plotOutput('plot')
+      fluidRow(
+        column(width = 12,
+          htmlOutput('text')
+        )
+      ),
+      fluidRow(
+        column(width = 2),
+        column(width = 8,
+          # Specification of range within an interval
+          sliderInput("range", "Range in percent:",
+            min = 0, max = 100, value = c(0,100), width = '100%')
+        )
+      ),
+      hr(),
+      fluidRow(
+        plotOutput('plot')
+      )
     )
   ),
 

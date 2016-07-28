@@ -91,6 +91,13 @@ shinyServer(function(input, output, session) {
     newdf
   })
 
+  output$text <- renderUI({
+    if(is.null(adjdataset())) {
+      HTML("<center><b>Please select an appropriate input file and select Plot button on Input tab</b></center><br><br>")
+    } else {
+      HTML("<center>Below is the density plot of the variants selected and their HMEscore</center><br>")
+    }
+  })
 
   output$plot <- renderPlot({
     # ggplot(dataset(), aes(seq_id)) + geom_bar()
