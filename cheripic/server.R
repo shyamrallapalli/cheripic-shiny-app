@@ -1,6 +1,7 @@
 library(shiny)
 library(ggplot2)
 library(hash)
+source("ggplot_theme.R")
 
 options(shiny.trace = TRUE)
 shinyServer(function(input, output, session) {
@@ -120,7 +121,7 @@ shinyServer(function(input, output, session) {
 
   output$plot <- renderPlot({
     if(is.data.frame(adjdataset())) {
-      ggplot(adjdataset(), aes(adj_pos)) + geom_density(adjust = 1/3)
+      ggplot(adjdataset(), aes(adj_pos)) + geom_density(adjust = 1/3) + labs(x ="position", y="density", main=NULL) + mytheme
     }
   })
 
