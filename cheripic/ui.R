@@ -45,12 +45,13 @@ shinyUI(navbarPage(
         )
       ),
       fluidRow(
-        column(width = 2),
         column(width = 8,
           # Specification of range within an interval
           sliderInput("range", "Range in percent:",
             min = 0, max = 100, value = c(0,100), width = '100%')
-        )
+        ),
+        column(width = 1),
+        column(width = 3, actionButton("viewvars", "View selected") )
       ),
       hr(),
       fluidRow(
@@ -61,7 +62,13 @@ shinyUI(navbarPage(
 
   tabPanel(
     title = "Selected Variants",
-    value = "Vars"),
+    value = "Vars",
+    fluidPage(
+      mainPanel(
+        DT::dataTableOutput('summary')
+      )
+    )
+  ),
 
   navbarMenu("More",
     tabPanel("About",

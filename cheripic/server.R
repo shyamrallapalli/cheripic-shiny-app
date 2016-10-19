@@ -4,6 +4,8 @@ library(hash)
 source("ggplot_theme.R")
 
 options(shiny.trace = TRUE)
+# option to increase upload file size to 30Mb
+options(shiny.maxRequestSize=30*1024^2)
 shinyServer(function(input, output, session) {
 
   # input$infile will be NULL initially. After the user selects
@@ -39,6 +41,18 @@ shinyServer(function(input, output, session) {
     if (isTRUE(x_select())) {
       updateNavbarPage(session, "navbar", selected = "Plot")
     }
+
+
+    y_select <- eventReactive(input$viewvars, {
+      TRUE
+    })
+
+    # Change the selected tab.
+    # Note that the tabset container must have been created with an 'id' argument
+    if (isTRUE(y_select())) {
+      updateNavbarPage(session, "navbar", selected = "Vars")
+    }
+
   })
 
   dataset <- reactive({
@@ -47,13 +61,13 @@ shinyServer(function(input, output, session) {
       return(NULL)
     }
 
-    scores = sort(unique(df$HMEscore), decreasing = TRUE)
+    scores = sort(unique(df$Score), decreasing = TRUE)
     newdf <- data.frame(matrix(ncol=ncol(df), nrow=0))
     colnames(newdf) = colnames(df)
     int = 0
 
     for (score in scores) {
-      selection = subset(df, df$HMEscore == score)
+      selection = subset(df, df$Score == score)
       elements = as.vector(unique(selection$seq_id))
       one_item = ''
       len = length(elements)
@@ -125,8 +139,8 @@ shinyServer(function(input, output, session) {
     }
   })
 
-  # output$summary <- renderPrint({
-  #   summary(cars)
-  # })
+  output$summary <- DT::renderDataTable({
+    adjdataset()
+  })
 
 })
