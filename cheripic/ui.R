@@ -64,6 +64,13 @@ shinyUI(navbarPage(
     title = "Selected Variants",
     value = "Vars",
     fluidPage(
+      fluidRow(
+        column(width = 4),
+        column(width = 8,
+          downloadButton('downloadVars', 'Download Selected Variants')
+        )
+      ),
+      hr(),
       mainPanel(
         DT::dataTableOutput('summary')
       )

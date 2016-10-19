@@ -41,8 +41,9 @@ shinyServer(function(input, output, session) {
     if (isTRUE(x_select())) {
       updateNavbarPage(session, "navbar", selected = "Plot")
     }
+  })
 
-
+  observe({
     y_select <- eventReactive(input$viewvars, {
       TRUE
     })
@@ -142,5 +143,14 @@ shinyServer(function(input, output, session) {
   output$summary <- DT::renderDataTable({
     adjdataset()
   })
+
+  output$downloadVars <- downloadHandler(
+    filename = function() {
+     paste('selected_', input$infile, '.txt', sep='')
+   },
+    content = function(file) {
+      write.table(adjdataset(), file, sep='\t',  quote=FALSE)
+    }
+  )
 
 })
